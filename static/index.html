@@ -1,0 +1,102 @@
+<html>
+<head>
+  <style>
+    .divider {
+      display: inline-block;
+      width: 49vw;
+      margin:0;
+      vertical-align: top;
+    }
+    .col {
+      display: inline-block;
+      border: 1px solid black;
+      margin: 1px;
+      width: 5vw;
+      height: 5vw;
+      font-size: 3vw;
+      text-align: center;
+
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
+  <script>
+
+  document.onkeydown=function(e){
+    if(e.keyCode == 13) {
+      e.preventDefault();
+      countdown(5);
+
+    }
+  }
+
+
+  function countdown(time) {
+    if (document.getElementById("shipment").value == "") {
+      alert("Mangler shipment nummer!");
+      return false;
+    }
+    let counter = document.getElementById("replacement");
+    time = parseInt(time);
+
+    if (time > 0) {
+      window.setTimeout(countdown,1000,time - 1);
+      counter.innerHTML = time;
+    } else {
+      document.submitform.submit();
+    }
+    return false;
+  }
+
+  function keypad_press(e) {
+    const input = document.getElementById("shipment");
+    let letter = e.target.innerText;
+    input.value = input.value + letter;
+
+  }
+
+  function delete_one() {
+    const input = document.getElementById("shipment");
+    let val = input.value;
+    input.value = val.substring(0,val.length - 1);
+  }
+  </script>
+</head>
+<body>
+  <div class="divider">
+    <div id="replacement" style="font-size: 20em;">
+      <img style="max-width: 99%;" src="/public/latest.jpg">
+    </div>
+    <form action="/save" name="submitform" enctype="multipart/form-data" method="POST">
+      <input type="text" id="shipment" autofocus name="shipment" placeholder="Shipment number" value="">
+      <input type="button" value="Send" onclick="event.preventDefault();countdown(3);">
+    </form>
+    <a href="/usb">Transfer</a>
+  </div>
+  <div class="divider">
+    <div>
+      <div onmouseup="keypad_press(event)" class="col">7</div>
+      <div onmouseup="keypad_press(event)" class="col">8</div>
+      <div onmouseup="keypad_press(event)" class="col">9</div>
+    </div>
+    <div>
+      <div onmouseup="keypad_press(event)" class="col">4</div>
+      <div onmouseup="keypad_press(event)" class="col">5</div>
+      <div onmouseup="keypad_press(event)" class="col">6</div>
+    </div>
+    <div>
+      <div onmouseup="keypad_press(event)" class="col">1</div>
+      <div onmouseup="keypad_press(event)" class="col">2</div>
+      <div onmouseup="keypad_press(event)" class="col">3</div>
+    </div>
+    <div>
+      <div onmouseup="keypad_press(event)" class="col">0</div>
+      <div onmouseup="delete_one()" class="col">&lt;</div>
+    </div>
+  </div>
+</body>
+</html>

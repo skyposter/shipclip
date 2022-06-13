@@ -1,0 +1,92 @@
+<html>
+<head>
+  <title>Browse</title>
+  <style>
+  body {
+    padding: 0px;
+    margin: none;
+  }
+  .inline {
+    margin: 5px;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .divider {
+    display: inline-block;
+    width: 49vw;
+    margin:0;
+    vertical-align: top;
+  }
+  .col {
+    display: inline-block;
+    border: 1px solid black;
+    margin: 1px;
+    width: 5vw;
+    height: 5vw;
+    font-size: 3vw;
+    text-align: center;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  </style>
+  <script>
+    function keypad_press(e) {
+      const input = document.getElementById("shipment");
+      let letter = e.target.innerText;
+      input.value = input.value + letter;
+
+    }
+
+    function delete_one() {
+      const input = document.getElementById("shipment");
+      let val = input.value;
+      input.value = val.substring(0,val.length - 1);
+    }
+  </script>
+</head>
+<body>
+  <div class="divider">
+    <a href="/public">Home</a>
+    <p style="color: #ff0000;">{{ message }}</p>
+    <div class="inline">
+      <form action="/usb" method="get">
+        <input type="text" name="search" id="shipment" autofocus placeholder="shipment id"><br>
+        <input type="submit" value="Søk">
+      </form>
+    </div>
+    <div class="inline">
+      <form action="/fulltransfer" method="get"><input type="submit" value="Flytt alle"></form>
+      {{ #each dir }}
+        <p><a href="/usb?search={{ name }}">{{ name }}</a></p>
+      {{ /each }}
+    </div>
+  </div>
+  <div class="divider">
+    <div>
+      <div onmouseup="keypad_press(event)" class="col">7</div>
+      <div onmouseup="keypad_press(event)" class="col">8</div>
+      <div onmouseup="keypad_press(event)" class="col">9</div>
+    </div>
+    <div>
+      <div onmouseup="keypad_press(event)" class="col">4</div>
+      <div onmouseup="keypad_press(event)" class="col">5</div>
+      <div onmouseup="keypad_press(event)" class="col">6</div>
+    </div>
+    <div>
+      <div onmouseup="keypad_press(event)" class="col">1</div>
+      <div onmouseup="keypad_press(event)" class="col">2</div>
+      <div onmouseup="keypad_press(event)" class="col">3</div>
+    </div>
+    <div>
+      <div onmouseup="keypad_press(event)" class="col">0</div>
+      <div onmouseup="delete_one()" class="col">&lt;</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<html>
+<head>
+  <title>Browse</title>
+  <style>
+  body {
+    padding: 0px;
+    margin: none;
+  }
+  div {
+    margin: 5px;
+    display: inline-block;
+    vertical-align: top;
+  }
+  img {
+    width: 4vh;
+    height: auto;
+  }
+  </style>
+</head>
+<body>
+  <a href="/usb">Back</a>
+  <br>
+  <form method="post" action="/usb/submit">
+    <div>
+      <h1>Select File:</h1>
+      {{#each file}}
+
+        <label><input type="checkbox" name="source[]" value="{{ path }}"><img src="/image?file={{ path }}">{{ name }}</label><button type="submit" onclick="return confirm('Ønsker du å slette {{ name }}?')" value="{{ path }}" name="delete">Slett</button><br>
+      {{/each}}
+    </div>
+    <div>
+      <h1>Select USB:</h1>
+      {{#each drive}}
+        <label><input type="radio" name="drive" value="{{ path }}">{{ name }}</label><br>
+      {{/each}}
+    </div>
+    <br>
+    <input type="submit" value="Copy">
+  </form>
+</transfer>
+</body>
+</html>

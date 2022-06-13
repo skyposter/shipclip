@@ -1,0 +1,31 @@
+<html>
+<head>
+  <title>Browse</title>
+  <style>
+  body {
+    padding: 0px;
+    margin: none;
+  }
+  div {
+    margin: 5px;
+    display: inline-block;
+    vertical-align: top;
+  }
+  </style>
+</head>
+<body>
+  <a href="/usb">Back</a>
+  <br>
+  <form method="post" action="/fulltransfer">
+    <div>
+      <h1>Select USB:</h1>
+      {{#each drive}}
+        <label><input type="radio" name="drive" value="{{ path }}">{{ name }}</label><br>
+      {{/each}}
+    </div>
+    <br>
+    <input type="submit" value="Copy">
+  </form>
+</transfer>
+</body>
+</html>
