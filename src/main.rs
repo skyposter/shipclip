@@ -21,6 +21,9 @@ use std::sync::mpsc::{Receiver, Sender};
 use std::sync::Mutex;
 use std::thread;
 
+static SAVEDIR: &str = relative!("saved");
+static SAVELEN: usize = SAVEDIR.len();
+
 struct Sendy(Mutex<Sender<bool>>);
 
 #[derive(Serialize)]
@@ -78,7 +81,7 @@ fn save_file(form: Form<Signal<'_>>, tx: &State<Sendy>) -> Redirect {
     tx_ch.send(true).unwrap();
     drop(tx_ch);
 
-    let metadata = std::fs::metadata(relative!("/static/latest.jpg"))
+    let metadata = std::fs::metadata(relative!("static/latest.jpg"))
         .expect("unable to read metadata from file");
 
     let mut mtime = match metadata.modified() {
@@ -89,7 +92,7 @@ fn save_file(form: Form<Signal<'_>>, tx: &State<Sendy>) -> Redirect {
     let mut wait_write = false;
 
     for _ in 0..40 {
-        let newmeta = match std::fs::metadata(relative!("/static/latest.jpg")) {
+        let newmeta = match std::fs::metadata(relative!("static/latest.jpg")) {
             Ok(m) => m,
             Err(_) => metadata.clone(),
         };
@@ -129,14 +132,14 @@ fn search(jar: &CookieJar<'_>) -> Template {
         "search",
         &SearchContext {
             message: messages,
-            dir: get_folder_content(relative!("/saved")),
+            dir: get_folder_content(SAVEDIR),
         },
     );
 }
 
 #[get("/usb?<search>")]
 fn filetransfer(search: String) -> Template {
-    let files = get_folder_content(&format!("{}/{}", relative!("/saved"), search));
+    let files = get_folder_content(&format!("{}/{}", SAVEDIR, search));
     let drives = get_folder_content("/media/");
 
     return Template::render(
@@ -166,7 +169,7 @@ fn get_image(file: String, jar: &CookieJar<'_>) -> (ContentType, Vec<u8>) {
     use std::fs::File;
 
     let mut data: Vec<u8> = Vec::new();
-    if file.replace("//", "/")[0..26] != "/home/server/imgcap/saved/"[0..26] {
+    if file.replace("//", "/")[0..SAVELEN] != SAVEDIR[0..SAVELEN] {
         jar.add(Cookie::new("message", "Invalid path"));
         return (ContentType::JPEG, data);
     }
@@ -185,7 +188,7 @@ fn full_submit(form: Form<USB>, jar: &CookieJar<'_>) -> Redirect {
         return Redirect::to("/usb");
     }
     let target = Path::new(&form.drive);
-    let folder = get_folder_content(relative!("/saved"));
+    let folder = get_folder_content(SAVEDIR);
 
     for f1 in folder {
         let files = get_folder_content(&f1.path);
@@ -248,7 +251,7 @@ fn transfer_files(form: Form<Transfer>, jar: &CookieJar<'_>) -> Redirect {
             filename.to_str().unwrap()
         ));
 
-        if f.replace("//", "/")[0..26] != "/home/server/imgcap/saved/"[0..26] {
+        if f.replace("//", "/")[0..SAVELEN] != SAVEDIR[0..SAVELEN] {
             jar.add(Cookie::new("message", "Invalid path"));
             continue;
         }
@@ -273,7 +276,7 @@ fn transfer_files(form: Form<Transfer>, jar: &CookieJar<'_>) -> Redirect {
 }
 
 fn delete_file(file: &str) {
-    if file.replace("//", "/")[0..26] != "/home/server/imgcap/saved/"[0..26] {
+    if file.replace("//", "/")[0..SAVELEN] != SAVEDIR[0..SAVELEN] {
         return;
     }
 
@@ -306,8 +309,8 @@ fn get_folder_content(target: &str) -> Vec<Folder> {
         let mut vec = Vec::new();
         let requestpath = safetarget.as_ref().replace("//", "/");
 
-        if requestpath.len() > 26
-            && requestpath[0..26] == "/home/server/imgcap/saved/"[0..26]
+        if requestpath.len() > SAVELEN
+            && requestpath[0..SAVELEN] == SAVEDIR[0..SAVELEN]
             && files.peek().is_none()
         {
             std::fs::remove_dir(path).expect("unable to delete parentfolder");
@@ -346,7 +349,7 @@ fn save_file_to_folder(name: String) {
     )[0..19]
         .to_string()
         .replace(":", ".");
-    let dir_path = format!("{}/{}", relative!("/saved"), safename);
+    let dir_path = format!("{}/{}", SAVEDIR, safename);
     let filename = PathBuf::from(format!("{}/{}.jpg", &dir_path, date));
     let source = PathBuf::from(relative!("/static/latest.jpg"));
 
